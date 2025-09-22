@@ -1,0 +1,117 @@
+<view class="search-bar">
+  <view class="search-input">
+    <icon type="search" size="16" color="#999" style="margin-right: 10rpx;"/>
+    <input type="text" placeholder="搜索地点或机位标签" bindinput="search" value="{{searchKeyword}}"/>
+  </view>
+  <view class="filter-btn" bindtap="showFilter">
+    <icon type="filter" size="20" color="#333"/>
+  </view>
+</view>
+
+<!-- 摄影博主风格的内容流 -->
+<view class="content-container" style="margin-top: 110rpx; padding-bottom: 120rpx;">
+  <!-- 分类筛选栏 -->
+  <view class="category-bar">
+    <scroll-view scroll-x="true" enable-flex>
+      <view class="category-item {{activeCategory === 'all' ? 'active' : ''}}" bindtap="changeCategory" data-category="all">全部</view>
+      <view class="category-item {{activeCategory === 'architecture' ? 'active' : ''}}" bindtap="changeCategory" data-category="architecture">建筑</view>
+      <view class="category-item {{activeCategory === 'nature' ? 'active' : ''}}" bindtap="changeCategory" data-category="nature">自然</view>
+      <view class="category-item {{activeCategory === 'portrait' ? 'active' : ''}}" bindtap="changeCategory" data-category="portrait">人像</view>
+      <view class="category-item {{activeCategory === 'street' ? 'active' : ''}}" bindtap="changeCategory" data-category="street">街拍</view>
+    </scroll-view>
+  </view>
+  
+  <!-- 内容列表 -->
+  <view class="post-list">
+    <block wx:for="{{locations}}" wx:key="id">
+      <view class="post-card" bindtap="onCardTap" data-id="{{item.id}}">
+        <!-- 作者信息 -->
+        <view class="post-header">
+          <image class="avatar" src="{{item.author.avatar}}"/>
+          <view class="author-info">
+            <view class="nickname">{{item.author.nickname}}</view>
+            <view class="post-time">{{item.postTime}}</view>
+          </view>
+        </view>
+        
+        <!-- 标题和简介 -->
+        <view class="post-title">{{item.name}}</view>
+        <view class="post-description">{{item.description}}</view>
+        
+        <!-- 图片展示区域 -->
+        <view class="images-container">
+          <block wx:if="{{item.images.length === 1}}">
+            <!-- 单张图片 -->
+            <image class="single-image" src="{{item.images[0]}}" mode="aspectFill"/>
+          </block>
+          <block wx:elif="{{item.images.length === 2}}">
+            <!-- 两张图片 -->
+            <view class="two-images">
+              <image src="{{item.images[0]}}" mode="aspectFill"/>
+              <image src="{{item.images[1]}}" mode="aspectFill"/>
+            </view>
+          </block>
+          <block wx:else>
+            <!-- 三张及以上图片 -->
+            <view class="multi-images">
+              <image src="{{item.images[0]}}" mode="aspectFill"/>
+              <view class="remaining-images" wx:if="{{item.images.length > 3}}">
+                <text>+{{item.images.length - 3}}</text>
+              </view>
+            </view>
+          </block>
+        </view>
+        
+        <!-- 机位位置信息 -->
+        <view class="location-info">
+          <icon type="location" size="16" color="#1AAD19"/>
+          <text class="location-text">{{item.address}}</text>
+          <text class="distance">{{item.distance}}</text>
+        </view>
+        
+        <!-- 拍摄提示 -->
+        <view class="shooting-tips" wx:if="{{item.tips}}">
+          <text class="tip-label">💡 拍摄提示：</text>
+          <text class="tip-content">{{item.tips}}</text>
+        </view>
+        
+        <!-- 标签 -->
+        <view class="tags-container">
+          <view class="tag">{{item.type === 'architecture' ? '建筑' : item.type === 'nature' ? '自然' : item.type === 'portrait' ? '人像' : '街拍'}}</view>
+          <view class="tag">{{item.season || '全季'}}</view>
+          <view class="tag">最佳时间：{{item.bestTime || '全天'}}</view>
+        </view>
+        
+        <!-- 互动区域 -->
+        <view class="post-actions">
+          <view class="action-item">
+            <icon type="like" size="20" color="{{item.isLiked ? '#FF4D4F' : '#999'}}"/>
+            <text>{{item.favorites}}</text>
+          </view>
+          <view class="action-item">
+            <icon type="comment" size="20" color="#999"/>
+            <text>{{item.comments || '0'}}</text>
+          </view>
+          <view class="action-item">
+            <icon type="share" size="20" color="#999"/>
+            <text>分享</text>
+          </view>
+          <view class="action-item">
+            <icon type="star" size="20" color="{{item.isFavorited ? '#FFD700' : '#999'}}"/>
+            <text>{{item.checkins}}打卡</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+  
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{hasMore}}">
+    <text>上拉加载更多</text>
+  </view>
+</view>
+
+<!-- 底部发布按钮 -->
+<view class="publish-btn" bindtap="publishLocation">
+  <icon type="add" size="30" color="#fff"/>
+</view>

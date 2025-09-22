@@ -1,0 +1,163 @@
+<!-- publish.wxml -->
+<view class="publish-container">
+  <view class="form-section">
+    <text class="section-title">上传图片（最多9张）</text>
+    <view class="image-uploader">
+      <view wx:for="{{images}}" wx:key="*this" class="image-item">
+        <image src="{{item}}" mode="aspectFill" bindtap="previewImage" data-index="{{index}}"/>
+        <view class="image-actions">
+          <view class="delete-btn" bindtap="deleteImage" data-index="{{index}}">
+            <icon type="clear" size="16" color="#fff"/>
+          </view>
+          <view class="mark-btn" bindtap="markBestDirection" data-index="{{index}}">
+            <icon type="success_no_circle" size="16" color="#fff"/>
+          </view>
+        </view>
+      </view>
+      <view class="upload-btn" wx:if="{{images.length < maxImages}}" bindtap="chooseImage">
+        <icon type="camera" size="40" color="#999"/>
+        <text>添加图片</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <text class="section-title">机位名称 <text class="required">*</text></text>
+    <input 
+      type="text" 
+      placeholder="请输入机位名称（如：故宫角楼日出机位）" 
+      value="{{locationName}}" 
+      bindinput="onInputChange" 
+      data-field="locationName"
+    />
+  </view>
+
+  <view class="form-section">
+    <text class="section-title">位置定位 <text class="required">*</text></text>
+    <view class="location-selector" bindtap="reselectLocation">
+      <icon type="location" size="20" color="#1AAD19"/>
+      <text class="location-text">{{location || '点击选择位置'}}</text>
+      <icon type="arrowright" size="14" color="#999"/>
+    </view>
+    <text class="location-detail">{{currentLocation.address}}</text>
+  </view>
+
+  <view class="form-section">
+    <text class="section-title">拍摄类型</text>
+    <view class="type-selector">
+      <!-- 使用单独的布尔标记控制高亮样式，修复WXML编译错误 -->
+      <view class="type-item" catchtap="selectType" data-type="architecture" style="background-color: {{isArchitectureSelected ? '#e6f7ff' : '#f5f5f5'}}; color: {{isArchitectureSelected ? '#1890ff' : '#666'}}; border: {{isArchitectureSelected ? '2rpx solid #91d5ff' : 'none'}};">
+        <text>建筑</text>
+      </view>
+      <view class="type-item" catchtap="selectType" data-type="nature" style="background-color: {{isNatureSelected ? '#e6f7ff' : '#f5f5f5'}}; color: {{isNatureSelected ? '#1890ff' : '#666'}}; border: {{isNatureSelected ? '2rpx solid #91d5ff' : 'none'}};">
+        <text>自然</text>
+      </view>
+      <view class="type-item" catchtap="selectType" data-type="portrait" style="background-color: {{isPortraitSelected ? '#e6f7ff' : '#f5f5f5'}}; color: {{isPortraitSelected ? '#1890ff' : '#666'}}; border: {{isPortraitSelected ? '2rpx solid #91d5ff' : 'none'}};">
+        <text>人像</text>
+      </view>
+      <view class="type-item" catchtap="selectType" data-type="night" style="background-color: {{isNightSelected ? '#e6f7ff' : '#f5f5f5'}}; color: {{isNightSelected ? '#1890ff' : '#666'}}; border: {{isNightSelected ? '2rpx solid #91d5ff' : 'none'}};">
+        <text>夜景</text>
+      </view>
+      <view class="type-item" catchtap="selectType" data-type="sunrise_sunset" style="background-color: {{isSunriseSunsetSelected ? '#e6f7ff' : '#f5f5f5'}}; color: {{isSunriseSunsetSelected ? '#1890ff' : '#666'}}; border: {{isSunriseSunsetSelected ? '2rpx solid #91d5ff' : 'none'}};">
+        <text>日出日落</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <text class="section-title">详细描述</text>
+    <textarea 
+      placeholder="请输入机位的详细描述" 
+      value="{{description}}" 
+      bindinput="onInputChange" 
+      data-field="description"
+      auto-height
+      style="min-height: 150rpx;" 
+    />
+  </view>
+
+
+
+  <view class="form-section">
+    <text class="section-title">拍摄技巧</text>
+    <textarea 
+      placeholder="请分享拍摄该机位的技巧（如：最佳时间、推荐镜头等）" 
+      value="{{shootingTips}}" 
+      bindinput="onInputChange" 
+      data-field="shootingTips"
+      auto-height
+      style="min-height: 100rpx;" 
+    />
+  </view>
+
+  <view class="form-section">
+    <text class="section-title">注意事项</text>
+    <textarea 
+      placeholder="请输入拍摄该机位的注意事项（如：安全提示、人流情况等）" 
+      value="{{notes}}" 
+      bindinput="onInputChange" 
+      data-field="notes"
+      auto-height
+      style="min-height: 100rpx;" 
+    />
+  </view>
+
+  <view class="form-section">
+    <text class="section-title">拍摄设备（可选）</text>
+    <input 
+      type="text" 
+      placeholder="请输入拍摄设备（如：iPhone 13 Pro）" 
+      value="{{deviceInfo}}" 
+      bindinput="onInputChange" 
+      data-field="deviceInfo"
+    />
+  </view>
+
+  <view class="form-section">
+    <text class="section-title">添加标签（最多5个）</text>
+    <view class="tag-input-area">
+      <input 
+        type="text" 
+        placeholder="输入标签后按回车" 
+        value="{{inputTag}}" 
+        bindinput="onInputChange" 
+        data-field="inputTag"
+        bindconfirm="addTag"
+      />
+      <button class="add-tag-btn" bindtap="addTag">添加</button>
+    </view>
+    
+    <!-- 已选标签 -->
+    <view class="selected-tags" wx:if="{{tags.length > 0}}">
+      <block wx:for="{{tags}}" wx:key="*this">
+        <view class="tag-item">
+          <text>{{item}}</text>
+          <icon type="clear" size="14" color="#999" bindtap="deleteTag" data-index="{{index}}"/>
+        </view>
+      </block>
+    </view>
+
+    <!-- 推荐标签 -->
+    <view class="recommended-tags">
+      <text class="recommended-title">推荐标签：</text>
+      <block wx:for="{{recommendedTags}}" wx:key="*this">
+        <view class="recommended-tag-item" bindtap="selectRecommendedTag" data-tag="{{item}}">
+          <text>{{item}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button class="btn-secondary" bindtap="previewPublish">实时预览</button>
+    <button class="btn-secondary" bindtap="saveDraft">保存草稿</button>
+    <button class="btn-primary" bindtap="publishLocation">发布机位</button>
+  </view>
+
+  <!-- 草稿状态提示 -->
+  <view class="draft-tip" wx:if="{{isDraft}}">
+    <icon type="success" size="16" color="#1AAD19"/>
+    <text>草稿已保存</text>
+  </view>
+</view>

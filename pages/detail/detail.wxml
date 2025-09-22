@@ -1,0 +1,158 @@
+<!-- detail.wxml -->
+<view class="detail-container">
+  <!-- 顶部图片轮播区 -->
+  <view class="image-carousel">
+    <swiper 
+      indicator-dots="{{true}}" 
+      autoplay="{{true}}" 
+      circular="{{true}}" 
+      interval="3000" 
+      duration="500" 
+      bindchange="onImageChanged"
+    >
+      <block wx:for="{{locationDetail.images}}" wx:key="*this" wx:for-item="img">
+        <swiper-item>
+          <image 
+            src="{{img}}" 
+            mode="aspectFill" 
+            style="width: 100%; height: 500rpx;" 
+            bindtap="onImageTap" 
+            data-index="{{index}}"
+          />
+        </swiper-item>
+      </block>
+    </swiper>
+    <view class="device-info" wx:if="{{locationDetail.deviceInfo}}">{{locationDetail.deviceInfo}}</view>
+  </view>
+
+  <!-- 核心信息区 -->
+  <view class="info-section">
+    <view class="location-title">
+      <text class="title">{{locationDetail.name}}</text>
+      <view class="position" bindtap="navigateToLocation">
+        <icon type="location" size="16" color="#1AAD19"/>
+        <text class="address">{{locationDetail.address}}</text>
+        <icon type="arrowright" size="14" color="#999"/>
+      </view>
+    </view>
+
+    <!-- 描述部分 -->
+    <view class="description-section">
+      <view class="section-title">详细描述</view>
+      <text class="description">{{locationDetail.description}}</text>
+    </view>
+
+    <view class="description-section">
+      <view class="section-title">到达方式</view>
+      <text class="description">{{locationDetail.arrivalMethod}}</text>
+    </view>
+
+    <view class="description-section">
+      <view class="section-title">拍摄技巧</view>
+      <text class="description">{{locationDetail.shootingTips}}</text>
+    </view>
+
+    <view class="description-section">
+      <view class="section-title">注意事项</view>
+      <text class="description">{{locationDetail.notes}}</text>
+    </view>
+
+    <!-- 标签 -->
+    <view class="tags-section">
+      <block wx:for="{{locationDetail.tags}}" wx:key="*this">
+        <view class="tag">#{{item}}</view>
+      </block>
+    </view>
+
+    <!-- 天气提示 -->
+    <view class="weather-section" wx:if="{{weatherInfo}}">
+      <view class="section-title">拍摄天气建议</view>
+      <view class="weather-forecast">
+        <block wx:for="{{weatherInfo.forecast}}" wx:key="date">
+          <view class="weather-item {{item.suitable ? 'suitable' : 'not-suitable'}}">
+            <view class="weather-date">{{item.date}}</view>
+            <view class="weather-info">{{item.weather}} {{item.temp}}</view>
+            <view class="best-time" wx:if="{{item.bestTime}}">最佳时间：{{item.bestTime}}</view>
+            <view class="not-suitable-text" wx:else>不适合拍摄</view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <!-- 互动区 -->
+  <view class="action-section">
+    <view class="action-item" bindtap="toggleFavorite">
+      <icon type="star" size="20" color="{{isLiked ? '#FFD700' : '#999'}}" style="margin-bottom: 8rpx;"/>
+      <text class="action-text">{{isLiked ? '已收藏' : '收藏'}}</text>
+      <text class="action-count">{{likeCount}}</text>
+    </view>
+    <view class="action-item" bindtap="shareLocation">
+      <icon type="share" size="20" color="#999" style="margin-bottom: 8rpx;"/>
+      <text class="action-text">分享</text>
+    </view>
+    <view class="action-item" bindtap="navigateToLocation">
+      <icon type="location" size="20" color="#999" style="margin-bottom: 8rpx;"/>
+      <text class="action-text">导航</text>
+    </view>
+    <view class="action-item" bindtap="reportLocation">
+      <icon type="warn" size="20" color="#999" style="margin-bottom: 8rpx;"/>
+      <text class="action-text">举报</text>
+    </view>
+  </view>
+
+  <!-- 我也拍过按钮 -->
+  <view class="i-also-shot-btn" bindtap="iAlsoShot">
+    <icon type="camera" size="20" color="#fff" style="margin-right: 10rpx;"/>
+    <text>我也拍过</text>
+  </view>
+
+  <!-- 评论区 -->
+  <view class="comments-section">
+    <view class="section-title">用户评论 ({{comments.length}})</view>
+    
+    <!-- 评论输入框 -->
+    <view class="comment-input-area">
+      <input 
+        type="text" 
+        placeholder="写下你的拍摄体验..." 
+        value="{{newComment}}" 
+        bindinput="onCommentInput" 
+        class="comment-input"
+      />
+      <button class="comment-submit" bindtap="submitComment">发送</button>
+    </view>
+
+    <!-- 评论列表 -->
+    <view class="comments-list">
+      <block wx:for="{{comments}}" wx:key="id">
+        <view class="comment-item">
+          <image class="comment-avatar" src="{{item.avatar}}"/>
+          <view class="comment-content">
+            <view class="comment-header">
+              <text class="comment-nickname">{{item.nickname}}</text>
+              <text class="comment-time">{{item.time}}</text>
+            </view>
+            <text class="comment-text">{{item.content}}</text>
+            <view class="comment-images" wx:if="{{item.images.length > 0}}">
+              <block wx:for="{{item.images}}" wx:key="*this">
+                <image src="{{item}}" mode="aspectFill" style="width: 150rpx; height: 150rpx; margin-right: 10rpx; border-radius: 8rpx;"/>
+              </block>
+            </view>
+            <view class="comment-reply" wx:if="{{item.reply}}">
+              <text class="reply-nickname">{{item.reply.nickname}}：</text>
+              <text class="reply-content">{{item.reply.content}}</text>
+            </view>
+            <view class="comment-action">
+              <text class="like-btn">
+                <icon type="like" size="16" color="#999" style="margin-right: 5rpx;"/>
+                {{item.likes}}
+              </text>
+              <text class="reply-btn">回复</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

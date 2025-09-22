@@ -1,0 +1,28 @@
+<view class="login-container">
+  <view class="logo">
+    <image src="/images/logo.svg" mode="aspectFit"></image>
+    <text class="app-name">摄影机位分享</text>
+  </view>
+  
+  <view class="form">
+    <view class="input-group">
+      <view class="input-wrapper">
+        <icon type="user" size="20" class="input-icon"></icon>
+        <input type="text" placeholder="请输入用户名" bindinput="onUsernameInput" value="{{username}}"/>
+      </view>
+    </view>
+    
+    <view class="input-group">
+      <view class="input-wrapper">
+        <icon type="locked" size="20" class="input-icon"></icon>
+        <input type="password" placeholder="请输入密码" bindinput="onPasswordInput" value="{{password}}" password="true"/>
+      </view>
+    </view>
+    
+    <button class="login-btn" type="primary" bindtap="login" loading="{{loading}}" disabled="{{loading}}">登录</button>
+    
+    <view class="register-link" bindtap="goToRegister">
+      还没有账号？立即注册
+    </view>
+  </view>
+</view>

@@ -1,0 +1,83 @@
+<!-- checkin.wxml -->
+<view class="checkin-container">
+  <view class="page-title">我的打卡记录</view>
+  
+  <!-- 时间轴 -->
+  <view class="timeline">
+    <block wx:if="{{!loading && checkinRecords.length === 0}}">
+      <view class="empty-state">
+        <icon type="camera" size="60" color="#ccc"/>
+        <text>还没有打卡记录</text>
+        <text style="font-size: 24rpx; color: #999; margin-top: 10rpx; display: block;">去探索更多机位并记录你的作品吧</text>
+      </view>
+    </block>
+    
+    <block wx:elif="{{loading}}">
+      <view class="loading-state">
+        <text>加载中...</text>
+      </view>
+    </block>
+    
+    <block wx:else>
+      <block wx:for="{{checkinRecords}}" wx:key="id">
+        <!-- 时间轴节点 -->
+        <view class="timeline-item">
+          <view class="timeline-dot"></view>
+          <view class="timeline-line" wx:if="{{index < checkinRecords.length - 1}}"></view>
+          <view class="timeline-content">
+            <!-- 打卡时间 -->
+            <view class="checkin-time">{{item.checkinTime}}</view>
+            
+            <!-- 机位信息 -->
+            <view class="location-info" bindtap="onLocationTap" data-id="{{item.locationId}}">
+              <icon type="location" size="16" color="#1AAD19"/>
+              <text class="location-name">{{item.locationName}}</text>
+            </view>
+            
+            <!-- 用户拍摄的图片 -->
+            <view class="user-images">
+              <block wx:for="{{item.userImages}}" wx:key="*this" wx:for-item="img" wx:for-index="imgIndex">
+                <image 
+                  src="{{img}}" 
+                  mode="aspectFill" 
+                  bindtap="previewImage" 
+                  data-index="{{imgIndex}}" 
+                  data-record-index="{{index}}"
+                />
+              </block>
+            </view>
+            
+            <!-- 评论 -->
+            <view class="checkin-comments" wx:if="{{item.comments}}">
+              <text>{{item.comments}}</text>
+            </view>
+            
+            <!-- 操作区 -->
+            <view class="checkin-actions">
+              <view class="action-item" bindtap="toggleLike" data-id="{{item.id}}">
+                <icon type="like" size="20" color="{{item.isLiked ? '#FF4D4F' : '#999'}}" style="margin-right: 8rpx;"/>
+                <text>{{item.likes}}</text>
+              </view>
+              <view class="action-item" bindtap="compareWithOriginal" data-index="{{index}}">
+                <icon type="compare" size="20" color="#1AAD19" style="margin-right: 8rpx;"/>
+                <text>对比原机位</text>
+              </view>
+            </view>
+            
+            <!-- 原机位预览 -->
+            <view class="original-location" bindtap="onLocationTap" data-id="{{item.locationId}}">
+              <view class="original-title">原机位预览</view>
+              <image src="{{item.locationImages[0]}}" mode="aspectFill"/>
+              <text class="view-detail">查看详情</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </block>
+  </view>
+  
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{hasMore && !loading}}">
+    <text>上拉加载更多</text>
+  </view>
+</view>

@@ -1,0 +1,58 @@
+<view class="register-container">
+  <view class="logo">
+    <image src="/images/logo.svg" mode="aspectFit"></image>
+    <text class="app-name">用户注册</text>
+  </view>
+  
+  <view class="form">
+    <view class="input-group">
+      <view class="input-wrapper">
+        <icon type="user" size="20" class="input-icon"></icon>
+        <input type="text" placeholder="请设置用户名" bindinput="onUsernameInput" value="{{username}}"/>
+      </view>
+    </view>
+    
+    <view class="input-group">
+      <view class="input-wrapper">
+        <icon type="locked" size="20" class="input-icon"></icon>
+        <input type="password" placeholder="请设置密码（6-20位）" bindinput="onPasswordInput" value="{{password}}" password="true"/>
+      </view>
+    </view>
+    
+    <view class="input-group">
+      <view class="input-wrapper">
+        <icon type="locked" size="20" class="input-icon"></icon>
+        <input type="password" placeholder="请再次输入密码" bindinput="onConfirmPasswordInput" value="{{confirmPassword}}" password="true"/>
+      </view>
+    </view>
+    
+    <view class="input-group">
+      <view class="input-wrapper">
+        <icon type="info" size="20" class="input-icon"></icon>
+        <input type="text" placeholder="请设置昵称" bindinput="onNicknameInput" value="{{nickname}}"/>
+      </view>
+    </view>
+    
+    <view class="input-group">
+      <view class="input-wrapper">
+        <icon type="email" size="20" class="input-icon"></icon>
+        <input type="text" placeholder="请输入邮箱（选填）" bindinput="onEmailInput" value="{{email}}"/>
+      </view>
+    </view>
+    
+    <view class="input-group">
+      <view class="input-wrapper">
+        <icon type="phone" size="20" class="input-icon"></icon>
+        <input type="number" placeholder="请输入手机号（选填）" bindinput="onPhoneInput" value="{{phone}}"/>
+      </view>
+    </view>
+    
+    <view wx:if="{{errorMsg}}" class="error-tip">{{errorMsg}}</view>
+    
+    <button class="register-btn" type="primary" bindtap="register" loading="{{loading}}" disabled="{{loading}}">注册</button>
+    
+    <view class="login-link" bindtap="goToLogin">
+      已有账号？返回登录
+    </view>
+  </view>
+</view>
